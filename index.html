@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Portafolio — Maximiliano</title>
+<style>
+  /* ── VARIABLES DE COLOR ── */
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2330;
+    --green: #00e5a0;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --muted: #64748b;
+    --text: #e2e8f0;
+  }
+
+  /* ── RESET Y BASE ── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #00e5a0, #60a5fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .header .sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+  }
+  .last-update {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media(max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .kpi-label {
+    font-size: 0.62rem;
+    font-family: 'Courier New', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 8px;
+  }
+  .kpi-val {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .kpi-sub {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .tab {
+    padding: 8px 18px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all .2s;
+    user-select: none;
+  }
+  .tab.active {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: #334155;
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── TABLA DE HOLDINGS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-size: 0.65rem;
+    font-family: 'Courier New', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    font-size: 0.62rem;
+    font-family: 'Courier New', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 12px 14px;
+    font-size: 0.83rem;
+    border-bottom: 1px solid #0f1420;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+  .ticker-cell { font-weight: 700; font-size: 0.9rem; }
+  .mono { font-family: 'Courier New', monospace; }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .yellow { color: var(--yellow); }
+  .blue { color: var(--blue); }
+  .purple { color: var(--purple); }
+  .muted { color: var(--muted); }
+
+  /* ── BARRA DE PESO ── */
+  .weight-bar-bg {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-top: 4px;
+    width: 80px;
+  }
+  .weight-bar {
+    height: 6px;
+    border-radius: 99px;
+  }
+
+  /* ── LOADING SPINNER ── */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--border);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ERROR ── */
+  .error-msg {
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+
+  /* ── BADGE ── */
+  .badge {
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    display: inline-block;
+    margin-left: 4px;
+  }
+  .badge-cl { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .badge-us { background: rgba(0,229,160,0.12); color: var(--green); }
+
+  /* ── PRECIO EN VIVO ── */
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+    margin-right: 5px;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── SECCIÓN ── */
+  .sec {
+    font-size: 0.62rem;
+    font-family: 'Courier New', monospace;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sec::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── INSIGHT ── */
+  .insight {
+    border-left: 3px solid var(--green);
+    background: var(--surface);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .insight.warn { border-left-color: var(--yellow); }
+  .insight.danger { border-left-color: var(--red); }
+
+  /* ── REFRESH BUTTON ── */
+  .refresh-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: 'Courier New', monospace;
+  }
+  .refresh-btn:hover { border-color: var(--green); color: var(--green); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Portafolio de Maximiliano</h1>
+  <div class="sub">
+    <span class="live-dot"></span>Precios en tiempo real · 🇨🇱 Chile + 🇺🇸 USA
+  </div>
+  <div class="last-update" id="last-update">Cargando precios...</div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">Capital Total</div>
+    <div class="kpi-val green" id="kpi-total">—</div>
+    <div class="kpi-sub">USD estimado</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Portafolio USA</div>
+    <div class="kpi-val blue" id="kpi-usa">—</div>
+    <div class="kpi-sub">4 activos</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Portafolio Chile</div>
+    <div class="kpi-val yellow" id="kpi-cl">—</div>
+    <div class="kpi-sub">6 activos · CLP→USD</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Liquidez</div>
+    <div class="kpi-val purple">$1,192</div>
+    <div class="kpi-sub">USD disponibles</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('usa', this)">🇺🇸 Acciones USA</div>
+  <div class="tab" onclick="showTab('chile', this)">🇨🇱 Acciones Chile</div>
+  <div class="tab" onclick="showTab('resumen', this)">📈 Resumen</div>
+</div>
+
+<!-- TAB USA -->
+<div id="tab-usa" class="tab-content active">
+  <div id="usa-loading" class="loading">
+    <div class="spinner"></div>
+    Obteniendo precios de mercado...
+  </div>
+  <div id="usa-error" class="error-msg" style="display:none">
+    ⚠️ No se pudieron cargar los precios en tiempo real. Mostrando datos base.
+  </div>
+  <div class="card" id="usa-table-wrap" style="display:none">
+    <div class="card-title">Posiciones USA — NYSE / NASDAQ</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Activo</th>
+          <th>Invertido</th>
+          <th>Precio actual</th>
+          <th>Retorno real</th>
+          <th>% Portf.</th>
+          <th>Sector</th>
+        </tr>
+      </thead>
+      <tbody id="usa-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB CHILE -->
+<div id="tab-chile" class="tab-content">
+  <div class="error-msg">
+    ℹ️ Los precios de la Bolsa de Santiago requieren acceso directo. Los valores mostrados son los de tu app (actualizados manualmente). Para precios en vivo de Chile, visita <strong>bolsadesantiago.com</strong>.
+  </div>
+  <div class="card">
+    <div class="card-title">Posiciones Chile — Bolsa de Santiago</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Activo</th>
+          <th>Inversión (CLP)</th>
+          <th>USD equiv.</th>
+          <th>Retorno real</th>
+          <th>% Portf.</th>
+          <th>Sector</th>
+        </tr>
+      </thead>
+      <tbody id="cl-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB RESUMEN -->
+<div id="tab-resumen" class="tab-content">
+  <div class="sec">Métricas del portafolio</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Sharpe Ratio</div>
+      <div class="kpi-val purple">0.917</div>
+      <div class="kpi-sub">portafolio USA</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Volatilidad USA</div>
+      <div class="kpi-val red">24.0%</div>
+      <div class="kpi-sub">anualizada</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">VaR 95%</div>
+      <div class="kpi-val red">-$707</div>
+      <div class="kpi-sub">por mes</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Ret. esperado USA</div>
+      <div class="kpi-val green">26.5%</div>
+      <div class="kpi-sub">histórico anual</div>
+    </div>
+  </div>
+
+  <div class="sec">Distribución geográfica</div>
+  <div class="card" style="padding: 16px">
+    <div id="geo-bars"></div>
+  </div>
+
+  <div class="sec">Insights clave</div>
+  <div class="insight danger"><strong>🔴 45% en commodities</strong> — SQM-B + CDE + IAU se mueven juntos. Si cae el precio de metales, te golpea en Chile y USA al mismo tiempo.</div>
+  <div class="insight warn"><strong>⚠️ HABITAT es tu mayor posición chilena (33%)</strong> y está en rojo -5.16%. El sector inmobiliario depende de las tasas del Banco Central.</div>
+  <div class="insight"><strong>✅ Diversificación geográfica casi perfecta</strong> — 49% Chile / 51% USA. Protección contra shocks locales.</div>
+  <div class="insight"><strong>💡 El portafolio USA rinde el doble que el chileno</strong> — 26.5% vs 13.1% retorno esperado.</div>
+
+  <div style="margin-top: 16px; display: flex; align-items: center; gap: 12px;">
+    <button class="refresh-btn" onclick="loadPrices()">🔄 Actualizar precios</button>
+    <span class="muted" style="font-size: 0.75rem; font-family: 'Courier New', monospace;" id="refresh-status"></span>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// TUS POSICIONES — Edita estos números
+// cuando cambies algo en tu portafolio
+// ════════════════════════════════════════
+const USDCLP = 881.72; // Actualiza este número con el dólar del día
+
+const USA_POSITIONS = [
+  { ticker: 'IAU',  invested: 2834.78, ret: +34.32, sector: 'Gold ETF',         color: '#a78bfa' },
+  { ticker: 'AMD',  invested: 1296.73, ret: +26.02, sector: 'Semiconductores',  color: '#00e5a0' },
+  { ticker: 'CDE',  invested: 1133.70, ret: +35.69, sector: 'Minería Au/Ag',    color: '#fbbf24' },
+  { ticker: 'CEG',  invested:  942.23, ret:  -7.74, sector: 'Energía Nuclear',  color: '#f87171' },
+];
+
+const CL_POSITIONS = [
+  { ticker: 'HABITAT', clp: 2072485, ret:  -5.16, sector: 'Inmobiliario/AFP',  color: '#60a5fa' },
+  { ticker: 'SQM-B',   clp: 1784800, ret: +48.79, sector: 'Litio/Minería',     color: '#00e5a0' },
+  { ticker: 'LTM',     clp:  897817, ret: +18.59, sector: 'Aerolíneas',        color: '#a78bfa' },
+  { ticker: 'VAPORES', clp:  584011, ret:  -3.39, sector: 'Naviera/Logística', color: '#fbbf24' },
+  { ticker: 'ITAUCL',  clp:  509975, ret: -14.52, sector: 'Banca',             color: '#f87171' },
+  { ticker: 'LIPIGAS', clp:  412760, ret:  -4.78, sector: 'Energía/Gas',       color: '#fb923c' },
+];
+
+// ════════════════════════════════════════
+// CÁLCULOS
+// ════════════════════════════════════════
+const totalUSA   = USA_POSITIONS.reduce((s, p) => s + p.invested, 0);
+const totalCL    = CL_POSITIONS.reduce((s, p) => s + p.clp, 0) / USDCLP;
+const totalAll   = totalUSA + totalCL + 1192;
+
+// ════════════════════════════════════════
+// CARGAR PRECIOS EN TIEMPO REAL
+// Usa Yahoo Finance via proxy público
+// ════════════════════════════════════════
+async function fetchPrice(ticker) {
+  // Usamos allorigins como proxy para Yahoo Finance
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  try {
+    const res  = await fetch(proxy);
+    const data = await res.json();
+    const parsed = JSON.parse(data.contents);
+    const price = parsed?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    const prev  = parsed?.chart?.result?.[0]?.meta?.previousClose;
+    const change = price && prev ? ((price - prev) / prev * 100) : null;
+    return { price, change };
+  } catch {
+    return { price: null, change: null };
+  }
+}
+
+async function loadPrices() {
+  document.getElementById('usa-loading').style.display = 'block';
+  document.getElementById('usa-table-wrap').style.display = 'none';
+  document.getElementById('usa-error').style.display = 'none';
+  document.getElementById('refresh-status').textContent = 'Actualizando...';
+
+  const tickers = USA_POSITIONS.map(p => p.ticker);
+  const results = await Promise.all(tickers.map(t => fetchPrice(t)));
+
+  // Armar tabla USA
+  const tbody = document.getElementById('usa-tbody');
+  tbody.innerHTML = '';
+  let anyPrice = false;
+
+  USA_POSITIONS.forEach((pos, i) => {
+    const { price, change } = results[i];
+    if (price) anyPrice = true;
+
+    const pct   = (pos.invested / totalAll * 100).toFixed(1);
+    const retCl = pos.ret >= 0 ? 'green' : 'red';
+    const chgCl = change >= 0  ? 'green' : 'red';
+    const priceStr  = price  ? `$${price.toFixed(2)}`  : '—';
+    const changeStr = change ? `${change >= 0 ? '+' : ''}${change.toFixed(2)}% hoy` : '';
+
+    const barW = Math.min(parseFloat(pct) / 25 * 100, 100);
+
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <span class="ticker-cell" style="color:${pos.color}">${pos.ticker}</span>
+          <span class="badge badge-us">🇺🇸</span>
+        </td>
+        <td class="mono">$${pos.invested.toLocaleString('es-CL')}</td>
+        <td class="mono">
+          ${priceStr}
+          ${changeStr ? `<br><span class="${chgCl}" style="font-size:0.7rem">${changeStr}</span>` : ''}
+        </td>
+        <td class="mono ${retCl}">${pos.ret >= 0 ? '+' : ''}${pos.ret}%</td>
+        <td>
+          <span class="mono muted">${pct}%</span>
+          <div class="weight-bar-bg">
+            <div class="weight-bar" style="width:${barW}%;background:${pos.color}"></div>
+          </div>
+        </td>
+        <td style="font-size:0.75rem;color:var(--muted)">${pos.sector}</td>
+      </tr>`;
+  });
+
+  // Total row
+  tbody.innerHTML += `
+    <tr style="background:var(--surface2)">
+      <td colspan="2" style="font-weight:700;font-size:0.85rem;padding:12px 14px">Total USA</td>
+      <td colspan="4" class="mono green" style="font-weight:700">$${totalUSA.toLocaleString('es-CL', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+    </tr>`;
+
+  document.getElementById('usa-loading').style.display = 'none';
+  document.getElementById('usa-table-wrap').style.display = 'block';
+
+  if (!anyPrice) {
+    document.getElementById('usa-error').style.display = 'block';
+  }
+
+  // Actualizar KPIs
+  document.getElementById('kpi-total').textContent = `$${Math.round(totalAll).toLocaleString('es-CL')}`;
+  document.getElementById('kpi-usa').textContent   = `$${Math.round(totalUSA).toLocaleString('es-CL')}`;
+  document.getElementById('kpi-cl').textContent    = `$${Math.round(totalCL).toLocaleString('es-CL')}`;
+
+  // Timestamp
+  const now = new Date();
+  const ts  = now.toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  document.getElementById('last-update').innerHTML =
+    `<span class="live-dot"></span>Última actualización: ${ts}`;
+  document.getElementById('refresh-status').textContent = `✓ Actualizado ${ts}`;
+}
+
+// ════════════════════════════════════════
+// TABLA CHILE (precios fijos de tu app)
+// ════════════════════════════════════════
+function buildChileTable() {
+  const tbody = document.getElementById('cl-tbody');
+  CL_POSITIONS.forEach(pos => {
+    const usd  = (pos.clp / USDCLP);
+    const pct  = (usd / totalAll * 100).toFixed(1);
+    const retCl = pos.ret >= 0 ? 'green' : 'red';
+    const barW  = Math.min(parseFloat(pct) / 20 * 100, 100);
+
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <span class="ticker-cell" style="color:${pos.color}">${pos.ticker}</span>
+          <span class="badge badge-cl">🇨🇱</span>
+        </td>
+        <td class="mono">$${pos.clp.toLocaleString('es-CL')}</td>
+        <td class="mono muted">≈$${usd.toFixed(0)}</td>
+        <td class="mono ${retCl}">${pos.ret >= 0 ? '+' : ''}${pos.ret}%</td>
+        <td>
+          <span class="mono muted">${pct}%</span>
+          <div class="weight-bar-bg">
+            <div class="weight-bar" style="width:${barW}%;background:${pos.color}"></div>
+          </div>
+        </td>
+        <td style="font-size:0.75rem;color:var(--muted)">${pos.sector}</td>
+      </tr>`;
+  });
+
+  // Total
+  tbody.innerHTML += `
+    <tr style="background:var(--surface2)">
+      <td colspan="2" style="font-weight:700;font-size:0.85rem;padding:12px 14px">Total Chile</td>
+      <td class="mono yellow" style="font-weight:700">≈$${Math.round(totalCL).toLocaleString('es-CL')}</td>
+      <td colspan="3"></td>
+    </tr>`;
+}
+
+// ════════════════════════════════════════
+// BARRAS GEOGRÁFICAS
+// ════════════════════════════════════════
+function buildGeoBars() {
+  const pctUSA = (totalUSA / totalAll * 100).toFixed(1);
+  const pctCL  = (totalCL  / totalAll * 100).toFixed(1);
+  const pctLiq = (1192     / totalAll * 100).toFixed(1);
+
+  const items = [
+    { label: '🇺🇸 USA',      pct: pctUSA, color: '#00e5a0', val: `$${Math.round(totalUSA).toLocaleString('es-CL')}` },
+    { label: '🇨🇱 Chile',    pct: pctCL,  color: '#60a5fa', val: `$${Math.round(totalCL).toLocaleString('es-CL')}` },
+    { label: '💵 Liquidez',  pct: pctLiq, color: '#a78bfa', val: '$1,192' },
+  ];
+
+  const el = document.getElementById('geo-bars');
+  items.forEach(item => {
+    el.innerHTML += `
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:0.82rem">${item.label}</span>
+          <span style="font-size:0.78rem;font-family:'Courier New',monospace;color:${item.color}">
+            ${item.val} · ${item.pct}%
+          </span>
+        </div>
+        <div style="height:8px;background:var(--border);border-radius:99px;overflow:hidden">
+          <div style="height:8px;width:${item.pct}%;background:${item.color};border-radius:99px;transition:width 1s ease"></div>
+        </div>
+      </div>`;
+  });
+}
+
+// ════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════
+function showTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ════════════════════════════════════════
+// INICIAR
+// ════════════════════════════════════════
+buildChileTable();
+buildGeoBars();
+loadPrices();
+
+// Auto-refresh cada 5 minutos
+setInterval(loadPrices, 5 * 60 * 1000);
+</script>
+</body>
+</html>
